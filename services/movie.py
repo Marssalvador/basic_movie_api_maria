@@ -21,4 +21,24 @@ class MovieService():
         new_movie = MovieModel(**movie.model_dump())
         self.db.add(new_movie)
         self.db.commit()
-        return
+        return new_movie
+
+    def update_movie(self, id: int, movie: Movie):
+        """Actualiza una película existente"""
+        db_movie = self.db.query(MovieModel).filter(MovieModel.id == id).first()
+        if db_movie:
+            update_data = movie.model_dump()
+            for field, value in update_data.items():
+                setattr(db_movie, field, value)
+            self.db.commit()
+            return db_movie
+        return None
+
+    def delete_movie(self, id: int):
+        """Elimina una película por su ID"""
+        db_movie = self.db.query(MovieModel).filter(MovieModel.id == id).first()
+        if db_movie:
+            self.db.delete(db_movie)
+            self.db.commit()
+            return True
+        return False
